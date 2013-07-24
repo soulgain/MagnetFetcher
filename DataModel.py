@@ -27,6 +27,9 @@ class MagnetRes(object):
 
 		if self.DBHandler.containTheMagnet(self.magnetURL) == False:
 			self.DBHandler.insert(self.toDict())
+			return True
+		else :
+			return False
 
 if __name__ == '__main__':
 	db = DBHandler.MagnetDB()

@@ -1,24 +1,36 @@
 # coding=utf-8
 
-import threading, time
+import threading, time, sys, argparse
 from Worker import Worker
+
 
 uriTemplate = '/?s=top&p=%d'
 
 class Dispatch():
-	def __init__(self, limit=20):
-		self.count = 1
+	def __init__(self, limit=20, start=1, end=sys.maxint):
+		self.current = start
 		self.limit = limit
+		self.end = end
 
 	def runloop(self):
-		while True:
+		while self.current <= self.end:
 			remainLimit = self.limit - threading.activeCount()
-			for x in xrange(1,remainLimit):
-				uri = uriTemplate % (self.count,)
-				self.count+=1
-				Worker(uri=uri).start()
+			if remainLimit > 0:
+				for x in xrange(1, remainLimit):
+					uri = uriTemplate % (self.current,)
+					self.current += 1
+					worker = Worker(uri=uri)
+					worker.daemon = True
+					worker.start()
+					# worker.join()
+			
 			time.sleep(2)
 
 if __name__ == '__main__':
-	test = Dispatch(limit=4)
-	test.runloop()
+	parser = argparse.ArgumentParser()
+	parser.add_argument('-threads', help='limit the max threads number to use', type=int, default=10)
+	parser.add_argument('-start', help='set the start page number', type=int, default=1)
+	parser.add_argument('-end', help='set the end page number', type=int, default=sys.maxint)
+
+	args = parser.parse_args()
+	Dispatch(limit=args.threads, start=args.start, end=args.end).runloop()
