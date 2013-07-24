@@ -23,7 +23,7 @@ class MagnetDB(object):
 		self.collection.insert(dictToInsert) 
 
 	def dump(self):
-		return list(self.collection.find(max=100))
+		return list(self.collection.find())
 
 	def test(self):
 		return self.db
@@ -32,7 +32,8 @@ class MagnetDB(object):
 		theRes = {'magnet':'test_magnet_url', 'title':'test_res_title'}
 
 		if self.containTheMagnet(theRes['magnet']) == False:
-			return self.collection.insert(theRes.toDict())
+			self.collection.insert(theRes.toDict())
+			return True
 		else:
 			return None
 

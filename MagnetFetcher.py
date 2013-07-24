@@ -26,14 +26,17 @@ class MagnetFetcher(object):
 			g_lock.acquire()
 			print threading.current_thread(),'total:',len(magnetRes.DBHandler.dump()),self.host+self.uri,' @+%d' % (newCount,)
 			g_lock.release()
-			return True
-
 		except urllib2.HTTPError, e:
 			g_lock.acquire()
-			print repr(e)+'code:'+str(e.code)+'while handle url: '+self.host+self.uri
+			print repr(e)+'code:'+str(e.code)+' while handle url: '+self.host+self.uri
 			g_lock.release()
-			if e.code == 500:
+			if e.code == 502:
 				self.start()
+		except urllib2.URLError, e:
+			g_lock.acquire()
+			print repr(e)+'code:'+str(e.code)+' while handle url: '+self.host+self.uri
+			g_lock.release()
+			raise(e)
 
 if __name__ == '__main__':
 	fetcher = MagnetFetcher(URI='/?s=top')
