@@ -16,5 +16,9 @@ class Worker(threading.Thread):
 if __name__ == '__main__':
 	for x in xrange(1,10):
 		worker = Worker(uri='?s=top')
-		worker.start()
+		try:
+			worker.start()
+		except Exception, e:
+			worker.start()
+		
 	
